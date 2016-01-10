@@ -786,7 +786,7 @@ define([
                             //returns.disableNav = true;
                             //model.hideComponents();
                         }
-            */
+                        */
             return returns;
         },
 
@@ -1348,7 +1348,7 @@ define([
             }
 
             var indicators = this.indicatorsList;
-             
+
             var dataGrouping = this.config.dataGrouping.enable;
             this.chartRefList.each(function(o){
                 //only for graphs apart from the current one
@@ -1374,7 +1374,7 @@ define([
                     }
                 }
             });
-        }, chartConf.debounceTime),*/
+}, chartConf.debounceTime),*/
 
 
         /**
@@ -1678,7 +1678,7 @@ define([
             } finally {
                 !skipMsg && this.messenger[msgType]({
                     error: error,
-                    msg: (args.attr.value|| message || ids) + ' overlay removed successfully',
+                    msg: (args.attr.value || message || ids) + ' overlay removed successfully',
                     on: 'removing overlays',
                     loaded: true
                 });
@@ -1733,7 +1733,7 @@ define([
                                 on: "adding indicators",
                                 data: args
                             });
-                            //return false;*/
+//return false;*/
 
             //}
 
@@ -2592,6 +2592,8 @@ define([
                         break;
 
                     case 'trendline':
+
+                        // BINDING EVENTS FOR MAIN CHART
                         chartView.unBindEvent(handles);
                         $(container).bind(start, {
                             callback: this.start_drawlines,
@@ -2603,6 +2605,36 @@ define([
                             callback: this.add_trendlines,
                             chart: chart
                         }, this.event_handler);
+
+
+
+                        //BINDING EVENTS FOR SUB-TRENDLINE
+                        this.indicatorsList.each(function(model) {
+
+                            var indicatorID = 'section#' + model.get('id');
+
+
+                            var indicatorContainer = $(model.get('ref')).find('.highcharts-container');
+
+                            $(indicatorContainer).bind(start, {
+                                callback: this.start_drawlines,
+                                chart: model.view.chartRef,
+                                collection: this.trendlinesList,
+                                eventType: 'trendline'
+                            }, this.event_handler);
+
+
+
+                            $(container).bind(stop, {
+                                callback: this.add_trendlines,
+                                chart: model.view.chartRef
+                            }, this.event_handler);
+
+
+                        }, this);
+
+
+
                         //$(container).on('touchend', {callback: this.add_trendlines, chart: chart}, this.event_handler);
                         customMsg = '(Tooltip will not be visible)';
                         break;
@@ -3880,7 +3912,7 @@ define([
                                             isHist: isHist,
                                             redraw: false
                                         }); //!!!redraw
-                                        //}*/
+                //}*/
 
 
                     chartRef && chartRef.redraw();
@@ -4155,39 +4187,38 @@ define([
          *  @param {args}
          *  @private
          */
-        customiseNavigationBar:function(args){
-            var config=this.config;
-             //ankitz: This will show/hide the chartType/LineType view when on 1D/1W
-                                if(args.isHist){
-                                    $($('#chartType')[0]).removeClass(config.chart.classNames.disabled);
-                                    $($('#lineType')[0]).removeClass(config.chart.classNames.disabled);
-                                     $($('#overlays')[0]).removeClass(config.chart.classNames.disabled);
-                                     $($('#indicators')[0]).removeClass(config.chart.classNames.disabled);
-                                     $($('#draw.entryDiv')[0]).removeClass(config.chart.classNames.disabled);
-                                }
-                                else{
-                                    if(typeof config.chart.isChartTypeIntraWeekEnabled !="undefined" && !config.chart.isChartTypeIntraWeekEnabled){
-                                    $($('#chartType')[0]).addClass(config.chart.classNames.disabled);                                        
-                                    }
-                                    if( typeof config.chart.isLineTypeIntraWeekEnabled !="undefined" && !config.chart.isLineTypeIntraWeekEnabled){
-                                    $($('#lineType')[0]).addClass(config.chart.classNames.disabled);                                        
-                                    }
-                                      // ankitz: disabling Overlays/Indicators in INTRA/WEEK if config.js says so
-                                      if(!config.chart.isOverlaysIntraWeekEnabled){
-                                            $($('#overlays')[0]).addClass(config.chart.classNames.disabled);
-                                        }
+        customiseNavigationBar: function(args) {
+            var config = this.config;
+            //ankitz: This will show/hide the chartType/LineType view when on 1D/1W
+            if (args.isHist) {
+                $($('#chartType')[0]).removeClass(config.chart.classNames.disabled);
+                $($('#lineType')[0]).removeClass(config.chart.classNames.disabled);
+                $($('#overlays')[0]).removeClass(config.chart.classNames.disabled);
+                $($('#indicators')[0]).removeClass(config.chart.classNames.disabled);
+                $($('#draw.entryDiv')[0]).removeClass(config.chart.classNames.disabled);
+            } else {
+                if (typeof config.chart.isChartTypeIntraWeekEnabled != "undefined" && !config.chart.isChartTypeIntraWeekEnabled) {
+                    $($('#chartType')[0]).addClass(config.chart.classNames.disabled);
+                }
+                if (typeof config.chart.isLineTypeIntraWeekEnabled != "undefined" && !config.chart.isLineTypeIntraWeekEnabled) {
+                    $($('#lineType')[0]).addClass(config.chart.classNames.disabled);
+                }
+                // ankitz: disabling Overlays/Indicators in INTRA/WEEK if config.js says so
+                if (!config.chart.isOverlaysIntraWeekEnabled) {
+                    $($('#overlays')[0]).addClass(config.chart.classNames.disabled);
+                }
 
-                                        if(!config.chart.isIndicatorsIntraWeekEnabled){
-                                            $($('#indicators')[0]).addClass(config.chart.classNames.disabled);
-                                        }
+                if (!config.chart.isIndicatorsIntraWeekEnabled) {
+                    $($('#indicators')[0]).addClass(config.chart.classNames.disabled);
+                }
 
-                                        if(!config.chart.isDrawInstancesIntraWeekEnabled){
-                                            $($('#draw.entryDiv')[0]).addClass(config.chart.classNames.disabled);
-                                        }
-                                }  
+                if (!config.chart.isDrawInstancesIntraWeekEnabled) {
+                    $($('#draw.entryDiv')[0]).addClass(config.chart.classNames.disabled);
+                }
+            }
 
-        $($('#lineType')[0]).addClass(config.chart.classNames.disabled);//ankitz hiding lineType temporily till issue solves                                                       
-                
+            $($('#lineType')[0]).addClass(config.chart.classNames.disabled); //ankitz hiding lineType temporily till issue solves                                                       
+
         }
     });
 });
